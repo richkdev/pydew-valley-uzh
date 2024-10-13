@@ -1,5 +1,3 @@
-from math import cos, pi, sin
-
 import pygame
 
 from src.settings import OVERLAY_POSITIONS

@@ -2,14 +2,16 @@ import pygame
 
 from src.enums import ClockVersion
 from src.gui.health_bar import HealthProgressBar
-from src.overlay.fps import FPS
 from src.overlay.clock import Clock
+from src.overlay.fps import FPS
 from src.overlay.game_time import GameTime
 from src.settings import OVERLAY_POSITIONS
 
 
 class Overlay:
-    def __init__(self, entity, overlay_frames, game_time: GameTime, clock: pygame.time.Clock):
+    def __init__(
+        self, entity, overlay_frames, game_time: GameTime, clock: pygame.time.Clock
+    ):
         # general setup
         self.display_surface = pygame.display.get_surface()
         self.player = entity

@@ -15,7 +15,9 @@ type HatStatus = bool | None
 type HornStatus = bool | None
 type OutgroupSkinStatus = bool | None
 
+IS_WEB = sys.platform in ("emscripten", "wasm")
 SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 TILE_SIZE = 16
 CHAR_TILE_SIZE = 48
 SCALE_FACTOR = 4

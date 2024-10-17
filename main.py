@@ -11,6 +11,7 @@ import random
 import sys
 
 import pygame
+from pygame.locals import *
 
 from src import support
 from src.enums import GameState
@@ -30,9 +31,9 @@ from src.screens.shop import ShopMenu
 from src.screens.switch_to_outgroup_menu import OutgroupMenu
 from src.settings import (
     EMOTE_SIZE,
+    IS_WEB,
     RANDOM_SEED,
-    SCREEN_HEIGHT,
-    SCREEN_WIDTH,
+    SCREEN_SIZE,
     AniFrames,
     MapDict,
     SoundDict,
@@ -56,8 +57,26 @@ class Game:
     def __init__(self):
         # main setup
         pygame.init()
-        screen_size = (SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.display_surface = pygame.display.set_mode(screen_size)
+
+        flags = OPENGL | HWSURFACE | DOUBLEBUF
+
+        try:
+            self.display_surface = pygame.display.set_mode(SCREEN_SIZE, flags, vsync=1)
+        except pygame.error:
+            self.display_surface = pygame.display.set_mode(SCREEN_SIZE, flags, vsync=0)
+
+        from src.renderer import ctx, pipeline, screen_texture
+
+        self.ctx = ctx
+        self.pipeline = pipeline
+        self.screen_texture = screen_texture
+
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
+        pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 0)
+        pygame.display.gl_set_attribute(
+            pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_ES
+        )
+
         pygame.display.set_caption("Clear Skies")
 
         # frames
@@ -298,8 +317,27 @@ class Game:
                 self.previous_frame = self.display_surface.copy()
             self.display_surface.blit(mouse, mouse_pos)
             is_first_frame = False
-            pygame.display.update()
+            self.render()
             await asyncio.sleep(0)
+
+    def render(self):
+        if OPENGL:
+            self.pipeline.viewport = (0, 0, *SCREEN_SIZE)
+
+            self.ctx.new_frame()
+            self.screen_texture.clear()
+            self.screen_texture.write(
+                data=pygame.image.tobytes(self.display_surface, "RGBA", flipped=True),
+                size=self.display_surface.size,
+            )
+            self.pipeline.render()
+
+            pygame.display.flip()
+            self.ctx.end_frame()
+        else:
+            pygame.display.flip()
+
+        self.display_surface.fill((255, 255, 255, 255))
 
 
 if __name__ == "__main__":

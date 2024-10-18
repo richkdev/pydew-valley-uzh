@@ -3,6 +3,7 @@
 #  "pygame-ce",
 #  "pytmx",
 #  "pathfinding",
+#  "zengl",
 # ]
 # ///
 
@@ -11,7 +12,6 @@ import random
 import sys
 
 import pygame
-from pygame.locals import *
 
 from src import support
 from src.enums import GameState
@@ -58,7 +58,7 @@ class Game:
         # main setup
         pygame.init()
 
-        flags = OPENGL | HWSURFACE | DOUBLEBUF
+        flags = pygame.OPENGL | pygame.HWSURFACE | pygame.DOUBLEBUF
 
         try:
             self.display_surface = pygame.display.set_mode(SCREEN_SIZE, flags, vsync=1)
@@ -321,14 +321,14 @@ class Game:
             await asyncio.sleep(0)
 
     def render(self):
-        if OPENGL:
+        if pygame.OPENGL:
             self.pipeline.viewport = (0, 0, *SCREEN_SIZE)
 
             self.ctx.new_frame()
             self.screen_texture.clear()
             self.screen_texture.write(
                 data=pygame.image.tobytes(self.display_surface, "RGBA", flipped=True),
-                size=self.display_surface.size,
+                size=self.display_surface.get_size(),
             )
             self.pipeline.render()
 

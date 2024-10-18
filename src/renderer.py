@@ -9,7 +9,7 @@ screen_texture = ctx.image(size=SCREEN_SIZE, format="rgba8unorm")
 
 pipeline = ctx.pipeline(
     vertex_shader=open(resource_path("src/shaders/template.vert.glsl")).read(),
-    fragment_shader=open(resource_path("src/shaders/template.frag.glsl")).read(),
+    fragment_shader=open(resource_path("src/shaders/blue_tint.frag.glsl")).read(),
     layout=[
         {
             "name": "screen_texture",
